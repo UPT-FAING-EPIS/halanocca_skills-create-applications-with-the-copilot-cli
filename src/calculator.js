@@ -6,6 +6,9 @@
  * - subtraction (-)
  * - multiplication (*)
  * - division (/)
+ * - modulo (%)
+ * - exponentiation (^)
+ * - square root (sqrt)
  */
 
 function addition(a, b) {
@@ -27,6 +30,24 @@ function division(a, b) {
   return a / b;
 }
 
+function modulo(a, b) {
+  if (b === 0) {
+    throw new Error("Division by zero is not allowed.");
+  }
+  return a % b;
+}
+
+function power(base, exponent) {
+  return base ** exponent;
+}
+
+function squareRoot(n) {
+  if (n < 0) {
+    throw new Error("Square root of a negative number is not allowed.");
+  }
+  return Math.sqrt(n);
+}
+
 function calculate(a, operator, b) {
   switch (operator) {
     case "+":
@@ -37,32 +58,45 @@ function calculate(a, operator, b) {
       return multiplication(a, b);
     case "/":
       return division(a, b);
+    case "%":
+      return modulo(a, b);
+    case "^":
+      return power(a, b);
+    case "sqrt":
+      return squareRoot(a);
     default:
       throw new Error(
-        "Invalid operator. Use one of: +, -, *, /"
+        "Invalid operator. Use one of: +, -, *, /, %, ^, sqrt"
       );
   }
 }
 
 function printUsage() {
-  console.error("Usage: node src/calculator.js <number> <operator> <number>");
+  console.error("Usage: node src/calculator.js <number> <operator> [number]");
   console.error("Example: node src/calculator.js 8 * 3");
-  console.error("Operators: +, -, *, /");
+  console.error("Square root example: node src/calculator.js 9 sqrt");
+  console.error("Operators: +, -, *, /, %, ^, sqrt");
 }
 
 if (require.main === module) {
   const [, , leftArg, operator, rightArg] = process.argv;
 
-  if (!leftArg || !operator || !rightArg) {
+  if (!leftArg || !operator) {
     printUsage();
     process.exit(1);
   }
 
   const left = Number(leftArg);
+  const isSquareRoot = operator === "sqrt";
   const right = Number(rightArg);
 
-  if (!Number.isFinite(left) || !Number.isFinite(right)) {
-    console.error("Both operands must be valid numbers.");
+  if (!Number.isFinite(left) || (!isSquareRoot && !Number.isFinite(right))) {
+    console.error("Operands must be valid numbers.");
+    printUsage();
+    process.exit(1);
+  }
+
+  if (!isSquareRoot && !rightArg) {
     printUsage();
     process.exit(1);
   }
@@ -81,5 +115,8 @@ module.exports = {
   subtraction,
   multiplication,
   division,
+  modulo,
+  power,
+  squareRoot,
   calculate,
 };
